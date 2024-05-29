@@ -3,6 +3,7 @@ package br.alfredopaes.my_plant_backend.users
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -35,4 +36,10 @@ class UserController(
         return ResponseEntity.ok(user);
 
     }
+
+    @DeleteMapping("/{id}")
+    fun deleteById(@PathVariable id: Long): ResponseEntity<String> =
+        userService.delete(id)
+            ?.let { ResponseEntity.ok("Usuário ${it.name} removido com sucesso!") }
+            ?:ResponseEntity.status(404).body("Usuário não encontrado!")
 }

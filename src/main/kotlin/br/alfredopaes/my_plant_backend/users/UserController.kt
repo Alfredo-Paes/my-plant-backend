@@ -3,6 +3,7 @@ package br.alfredopaes.my_plant_backend.users
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -22,17 +23,21 @@ class UserController(
     }
 
     @GetMapping()
-    fun findAll(): List<User> {
-        return userService.findAll()
-    }
+    fun findAll(sortDir: String? = null) =
+        SortDir.entries.firstOrNull { it.name == (sortDir?: "ASC").uppercase() }
+            ?.let { userService.findAll(it) }
+            ?.let { ResponseEntity.ok(it) }
+            ?: ResponseEntity.badRequest().build()
 
     @GetMapping("/{id}")
-    fun findbyId(@PathVariable(value = "id") id: Long): ResponseEntity<User> {
-        val user: User? = userService.findById(id);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(user);
+    fun findbyId(@PathVariable(value = "id") id: Long) = userService.findById(id)
+        ?.let { ResponseEntity.ok(it) }
+        ?:ResponseEntity.status(404).body("Usuário não encontrado!")
 
-    }
+
+    @DeleteMapping("/{id}")
+    fun deleteById(@PathVariable id: Long): ResponseEntity<String> =
+        userService.delete(id)
+            ?.let { ResponseEntity.ok("Usuário ${it.name} removido com sucesso!") }
+            ?:ResponseEntity.status(404).body("Usuário não encontrado!")
 }

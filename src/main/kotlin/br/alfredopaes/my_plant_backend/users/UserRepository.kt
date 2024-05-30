@@ -26,4 +26,8 @@ class UserRepository {
     fun findById(id: Long): User? {
         return users[id];
     }
+
+    fun delete(id: Long): User? {
+        return users.remove(id);
+    }
 }

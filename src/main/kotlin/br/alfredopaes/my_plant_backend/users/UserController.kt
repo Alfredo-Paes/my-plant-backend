@@ -23,19 +23,17 @@ class UserController(
     }
 
     @GetMapping()
-    fun findAll(): List<User> {
-        return userService.findAll()
-    }
+    fun findAll(sortDir: String? = null) =
+        SortDir.entries.firstOrNull { it.name == (sortDir?: "ASC").uppercase() }
+            ?.let { userService.findAll(it) }
+            ?.let { ResponseEntity.ok(it) }
+            ?: ResponseEntity.badRequest().build()
 
     @GetMapping("/{id}")
-    fun findbyId(@PathVariable(value = "id") id: Long): ResponseEntity<User> {
-        val user: User? = userService.findById(id);
-        if (user == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(user);
+    fun findbyId(@PathVariable(value = "id") id: Long) = userService.findById(id)
+        ?.let { ResponseEntity.ok(it) }
+        ?:ResponseEntity.status(404).body("Usuário não encontrado!")
 
-    }
 
     @DeleteMapping("/{id}")
     fun deleteById(@PathVariable id: Long): ResponseEntity<String> =

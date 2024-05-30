@@ -8,7 +8,9 @@ class UserService(
 ) {
     fun save(user: User): User = userRepository.save(user);
 
-    fun findAll(): List<User> = userRepository.findAll();
+    fun findAll(dir: SortDir): List<User> =
+        if (dir == SortDir.ASC) userRepository.findAll().sortedBy { it.name }
+        else userRepository.findAll().sortedByDescending { it.name }
 
     fun findById(id: Long) = userRepository.findById(id);
 

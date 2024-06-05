@@ -1,5 +1,8 @@
 package br.alfredopaes.my_plant_backend.users
 
+import br.alfredopaes.my_plant_backend.plants.Plant
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
 
@@ -14,5 +17,9 @@ class User (
     var password: String = "",
     @NotNull
     var name: String = "",
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    @JsonManagedReference
+    var plants: List<Plant> = mutableListOf()
 ){
 }

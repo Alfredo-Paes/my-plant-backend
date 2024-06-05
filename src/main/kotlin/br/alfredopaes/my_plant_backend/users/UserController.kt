@@ -1,5 +1,7 @@
 package br.alfredopaes.my_plant_backend.users
 
+import br.alfredopaes.my_plant_backend.plants.Plant
+import br.alfredopaes.my_plant_backend.plants.PlantRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated
@@ -19,10 +21,11 @@ class UserController(
     @GetMapping
     fun findAll(
         @RequestParam sortDir: String? = null,
-        @RequestParam email: String? = null
+        @RequestParam email: String? = null,
+        @RequestParam name: String? = null
     ): ResponseEntity<List<User>> {
         val direction = SortDir.entries.firstOrNull { it.name == (sortDir ?: "ASC").uppercase() }
-        return direction?.let { ResponseEntity.ok(userService.findAll(it, email)) }
+        return direction?.let { ResponseEntity.ok(userService.findAll(it, email, name)) }
             ?: ResponseEntity.badRequest().build()
     }
 
@@ -50,6 +53,31 @@ class UserController(
         val updatedUser = userService.updateUser(id, user.toUser())
         return updatedUser
             ?.let { ResponseEntity.ok(it) }
+            ?: ResponseEntity.status(404).body("Usuário não encontrado!")
+    }
+
+    /*@PostMapping("/{id}/plants")
+    fun addPlantToUser(
+        @PathVariable(value = "id") userId: Long,
+        @RequestBody @Validated plantRequest: PlantRequest
+    ): ResponseEntity<Any> {
+        if (plantRequest.userId != userId) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User ID mismatch!")
+        }
+        val addedPlant = userService.addPlantToUser(plantRequest)
+        return addedPlant
+            ?.let { ResponseEntity.status(HttpStatus.CREATED).body(it) }
+            ?: ResponseEntity.status(404).body("Usuário não encontrado!")
+    }*/
+
+    @PostMapping("/{id}/plants")
+    fun addPlantToUser(
+        @PathVariable(value = "id") userId: Long,
+        @RequestBody @Validated plantRequest: PlantRequest
+    ): ResponseEntity<Any> {
+        val addedPlant = userService.addPlantToUser(userId, plantRequest)
+        return addedPlant
+            ?.let { ResponseEntity.status(HttpStatus.CREATED).body(it) }
             ?: ResponseEntity.status(404).body("Usuário não encontrado!")
     }
 }

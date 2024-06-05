@@ -1,6 +1,7 @@
 package br.alfredopaes.my_plant_backend.plants
 
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 
 data class PlantRequest(
     @NotBlank
@@ -13,9 +14,9 @@ data class PlantRequest(
     val timeToWaterThePlant: String
 ) {
     fun toPlant(): Plant = Plant(
-        namePlant = namePlant!!,
-        typePlant = typePlant!!,
-        validityOfPlantingLand = validityOfPlantingLand!!,
-        timeToWaterThePlant = timeToWaterThePlant!!
+        namePlant = namePlant,
+        typePlant = typePlant,
+        validityOfPlantingLand = validityOfPlantingLand,
+        timeToWaterThePlant = timeToWaterThePlant
     )
 }

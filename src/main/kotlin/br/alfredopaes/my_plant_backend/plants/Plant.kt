@@ -1,5 +1,8 @@
 package br.alfredopaes.my_plant_backend.plants
 
+import br.alfredopaes.my_plant_backend.users.User
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonManagedReference
 import jakarta.persistence.*
 import jakarta.validation.constraints.NotNull
 
@@ -17,4 +20,8 @@ class Plant(
     @NotNull
     var timeToWaterThePlant: String = "",
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    var user: User? = null
 )

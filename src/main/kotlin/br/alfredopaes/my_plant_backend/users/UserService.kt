@@ -1,11 +1,15 @@
 package br.alfredopaes.my_plant_backend.users
 
+import br.alfredopaes.my_plant_backend.plants.Plant
+import br.alfredopaes.my_plant_backend.plants.PlantRepository
+import br.alfredopaes.my_plant_backend.plants.PlantRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 @Service
 class UserService(
-    val userRepository: UserRepository
+    val userRepository: UserRepository,
+    val plantRepository: PlantRepository
 ) {
     fun save(user: User): User = userRepository.save(user);
 
@@ -39,5 +43,13 @@ class UserService(
         existingUser.email = userDetails.email
         existingUser.password = userDetails.password
         return userRepository.save(existingUser)
+    }
+
+    fun addPlantToUser(userId: Long, plantRequest: PlantRequest): Plant? {
+        val user = userRepository.findById(userId).orElse(null) ?: return null
+        val plant = plantRequest.toPlant().apply {
+            this.user = user
+        }
+        return plantRepository.save(plant)
     }
 }

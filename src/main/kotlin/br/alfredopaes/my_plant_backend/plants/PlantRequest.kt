@@ -1,7 +1,6 @@
 package br.alfredopaes.my_plant_backend.plants
 
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 
 data class PlantRequest(
     @NotBlank

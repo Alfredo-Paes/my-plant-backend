@@ -20,12 +20,14 @@ class UserService(
                 SortDir.DESC->userRepository.findAll(Sort.by("name").descending())
             }
         } else if (name.isNullOrEmpty()){
-            userRepository.findByEmail(email);
+            userRepository.findByEmail(email).sortedByDescending { it.email };
         } else {
-            userRepository.findByName(name);
+            userRepository.findByName(name).sortedByDescending { it.name };
         }
 
     }
+
+
 
     fun findById(id: Long): User? = userRepository.findById(id).orElse(null);
 
@@ -51,5 +53,26 @@ class UserService(
             this.user = user
         }
         return plantRepository.save(plant)
+    }
+
+    fun updatePlant(userId: Long, plantId: Long, plantDetails: PlantRequest): Plant? {
+        val user = userRepository.findById(userId).orElse(null) ?: return null
+        val existingPlant = plantRepository.findById(plantId).orElse(null) ?: return null
+        if (existingPlant.user?.id != user.id) return null
+
+        existingPlant.namePlant = plantDetails.namePlant;
+        existingPlant.typePlant = plantDetails.typePlant;
+        existingPlant.validityOfPlantingLand = plantDetails.validityOfPlantingLand;
+        existingPlant.timeToWaterThePlant = plantDetails.timeToWaterThePlant;
+
+        return plantRepository.save(existingPlant);
+    }
+
+    fun deletePlant(userId: Long, plantId: Long): Boolean {
+        val user = userRepository.findById(userId).orElse(null) ?: return false
+        val plant = plantRepository.findById(plantId).orElse(null) ?: return false
+        if (plant.user?.id != user.id) return false
+        plantRepository.delete(plant)
+        return true
     }
 }

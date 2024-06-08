@@ -2,7 +2,6 @@ package br.alfredopaes.my_plant_backend.security
 
 import br.alfredopaes.my_plant_backend.users.User
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 

@@ -46,8 +46,12 @@ class UserService(
         val user = userRepository.findByIdOrNull(id) ?: return false
         if (user.roles.any { it.name == "ADMIN" }) {
             val adminRole = roleRepository.findRoleByName("ADMIN")
-            if (adminRole != null && roleRepository.countByName("ADMIN").toInt() == 1) throw BadRequestExcepetion("Não pode deletar último Administrador")
+            if (adminRole != null && roleRepository.countByName("ADMIN").toInt() == 1) {
+                log.info("Não pode deletar último Administrador: {} - {}", user.id, user.name)
+                throw BadRequestExcepetion("Não pode deletar último Administrador")
+            }
         }
+        log.info("Usuário removido em: id={}, nome={}", user.id, user.name)
         userRepository.delete(user)
         return true
     }
@@ -57,6 +61,7 @@ class UserService(
         existingUser.name = userDetails.name
         existingUser.email = userDetails.email
         existingUser.password = userDetails.password
+        log.info("Usuário removido em: id={}, nome={}", userDetails.id, userDetails.name)
         return userRepository.save(existingUser)
     }
 
@@ -98,6 +103,7 @@ class UserService(
         val plant = plantRequest.toPlant().apply {
             this.user = user
         }
+        log.info("Planta {}, vinculada ao usuário {}", plant.namePlant, user.name)
         return plantRepository.save(plant)
     }
 
@@ -110,6 +116,7 @@ class UserService(
         existingPlant.typePlant = plantDetails.typePlant;
         existingPlant.validityOfPlantingLand = plantDetails.validityOfPlantingLand;
         existingPlant.timeToWaterThePlant = plantDetails.timeToWaterThePlant;
+        log.info("Planta {}, atualizada ao usuário {}", existingPlant.namePlant, user.name)
 
         return plantRepository.save(existingPlant);
     }
@@ -118,6 +125,7 @@ class UserService(
         val user = userRepository.findById(userId).orElse(null) ?: return false
         val plant = plantRepository.findById(plantId).orElse(null) ?: return false
         if (plant.user?.id != user.id) return false
+        log.info("Planta {}, removida do usuário {}", plant.namePlant, user.name)
         plantRepository.delete(plant)
         return true
     }

@@ -1,5 +1,6 @@
-package br.alfredopaes.my_plant_backend.users
+package br.alfredopaes.my_plant_backend.users.requests
 
+import br.alfredopaes.my_plant_backend.users.User
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 

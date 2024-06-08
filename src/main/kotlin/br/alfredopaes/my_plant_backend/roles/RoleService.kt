@@ -1,6 +1,5 @@
 package br.alfredopaes.my_plant_backend.roles
 
-import br.alfredopaes.my_plant_backend.plants.SortDirPlants
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 

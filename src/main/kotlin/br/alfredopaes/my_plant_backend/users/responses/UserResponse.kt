@@ -1,4 +1,6 @@
-package br.alfredopaes.my_plant_backend.users
+package br.alfredopaes.my_plant_backend.users.responses
+
+import br.alfredopaes.my_plant_backend.users.User
 
 data class UserResponse(
     val id: Long,

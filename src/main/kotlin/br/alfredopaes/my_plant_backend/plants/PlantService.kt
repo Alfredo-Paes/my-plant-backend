@@ -1,6 +1,6 @@
 package br.alfredopaes.my_plant_backend.plants
 
-import br.alfredopaes.my_plant_backend.users.UserRepository
+import br.alfredopaes.my_plant_backend.plants.utils.SortDirPlants
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 

@@ -2,8 +2,13 @@ package br.alfredopaes.my_plant_backend.users
 
 import br.alfredopaes.my_plant_backend.plants.Plant
 import br.alfredopaes.my_plant_backend.plants.PlantRepository
-import br.alfredopaes.my_plant_backend.plants.PlantRequest
+import br.alfredopaes.my_plant_backend.plants.requests.PlantRequest
 import br.alfredopaes.my_plant_backend.roles.RoleRepository
+import br.alfredopaes.my_plant_backend.security.Jwt
+import br.alfredopaes.my_plant_backend.users.responses.LoginResponse
+import br.alfredopaes.my_plant_backend.users.responses.UserResponse
+import br.alfredopaes.my_plant_backend.users.utils.SortDir
+import org.slf4j.LoggerFactory
 import org.springframework.data.domain.Sort
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -13,23 +18,9 @@ class UserService(
     val userRepository: UserRepository,
     val plantRepository: PlantRepository,
     val roleRepository: RoleRepository,
-
-    ) {
+    val jwt: Jwt
+) {
     fun save(user: User): User = userRepository.save(user);
-
-    /*fun findAll(dir: SortDir, role: String?, email: String? = null, name: String? = null): List<User> {
-        return if (email.isNullOrEmpty()) {
-            when(dir) {
-                SortDir.ASC->userRepository.findAll(Sort.by("name").ascending())
-                SortDir.DESC->userRepository.findAll(Sort.by("name").descending())
-            }
-        } else if (name.isNullOrEmpty()){
-            userRepository.findByEmail(email).sortedByDescending { it.email };
-        } else {
-            userRepository.findByName(name).sortedByDescending { it.name };
-        }
-
-    }*/
 
     fun findAll(dir: SortDir, role: String? = null, email: String? = null, name: String? = null): List<User> {
         return when {
@@ -80,6 +71,25 @@ class UserService(
         return true
     }
 
+    fun login(email: String, password: String): LoginResponse? {
+        val user = userRepository.findByEmail(email).firstOrNull()
+
+        if (user == null) {
+            log.warn("Usuário {} não encontrado!", email)
+            return null
+        }
+        if (password != user.password) {
+            log.warn("Senha Inválida")
+            return null
+        }
+
+        log.info("Usuário logado em: id={}, nome={}", user.id, user.name)
+        return LoginResponse(
+            token = jwt.createToken(user),
+            UserResponse(user)
+        )
+    }
+
     fun addPlantToUser(userId: Long, plantRequest: PlantRequest): Plant? {
         val user = userRepository.findById(userId).orElse(null) ?: return null
         val plant = plantRequest.toPlant().apply {
@@ -107,5 +117,9 @@ class UserService(
         if (plant.user?.id != user.id) return false
         plantRepository.delete(plant)
         return true
+    }
+
+    companion object {
+        val log = LoggerFactory.getLogger(UserService::class.java)
     }
 }

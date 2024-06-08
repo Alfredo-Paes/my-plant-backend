@@ -1,5 +1,6 @@
-package br.alfredopaes.my_plant_backend.roles
+package br.alfredopaes.my_plant_backend.roles.requests
 
+import br.alfredopaes.my_plant_backend.roles.Role
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 

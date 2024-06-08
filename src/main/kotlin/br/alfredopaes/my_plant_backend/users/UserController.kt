@@ -1,8 +1,15 @@
 package br.alfredopaes.my_plant_backend.users
 
-import br.alfredopaes.my_plant_backend.plants.PlantRequest
+import br.alfredopaes.my_plant_backend.plants.requests.PlantRequest
+import br.alfredopaes.my_plant_backend.users.requests.LoginRequest
+import br.alfredopaes.my_plant_backend.users.requests.UserRequest
+import br.alfredopaes.my_plant_backend.users.responses.UserResponse
+import br.alfredopaes.my_plant_backend.users.utils.SortDir
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
 
@@ -12,26 +19,20 @@ class UserController(
     val userService: UserService,
     ) {
 
+    @PostMapping("/login")
+    fun login(@Valid @RequestBody login: LoginRequest) =
+        userService.login(login.email!!, login.password!!)
+            ?.let { ResponseEntity.ok(it) }
+            ?: ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
     @PostMapping()
     fun insert(@RequestBody @Validated user: UserRequest): ResponseEntity<User> {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(user.toUser()));
     }
 
-    /*@GetMapping
-    fun findAll(
-        @RequestParam sortDir: String? = null,
-        @RequestParam email: String? = null,
-        @RequestParam name: String? = null
-    ): ResponseEntity<List<UserResponse>> {
-        val direction = SortDir.entries.firstOrNull { it.name == (sortDir ?: "ASC").uppercase() }
-        return direction
-            ?.let { userService.findAll(it, email, name) }
-            ?.map { UserResponse(it) }
-            ?.let { ResponseEntity.ok(it) }
-            ?: ResponseEntity.badRequest().build()
-    }*/
-
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name="WebToken")
     fun findAll(
         @RequestParam sortDir: String? = null,
         @RequestParam role: String? = null,
@@ -46,6 +47,8 @@ class UserController(
 
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name="WebToken")
     fun findbyId(
         @PathVariable(value = "id") id: Long
     ) = userService.findById(id)
@@ -54,6 +57,8 @@ class UserController(
         ?:ResponseEntity.status(404).body("Usuário não encontrado!")
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name="WebToken")
     fun deleteById(
         @PathVariable id: Long
     ): ResponseEntity<String> =
@@ -75,6 +80,8 @@ class UserController(
     }
 
     @PutMapping("/{id}/roles/{role}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @SecurityRequirement(name="WebToken")
     fun grant(
         @PathVariable id: Long,
         @PathVariable role: String

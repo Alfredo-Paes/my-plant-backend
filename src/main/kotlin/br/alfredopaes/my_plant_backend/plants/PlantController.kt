@@ -1,5 +1,7 @@
 package br.alfredopaes.my_plant_backend.plants
 
+import br.alfredopaes.my_plant_backend.plants.requests.PlantRequest
+import br.alfredopaes.my_plant_backend.plants.utils.SortDirPlants
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.annotation.Validated

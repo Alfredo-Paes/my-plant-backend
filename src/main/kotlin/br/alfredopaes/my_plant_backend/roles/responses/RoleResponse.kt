@@ -1,4 +1,6 @@
-package br.alfredopaes.my_plant_backend.roles
+package br.alfredopaes.my_plant_backend.roles.responses
+
+import br.alfredopaes.my_plant_backend.roles.Role
 
 class RoleResponse(
     val name: String,

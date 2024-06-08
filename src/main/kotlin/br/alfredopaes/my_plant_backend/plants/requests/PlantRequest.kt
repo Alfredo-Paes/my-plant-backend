@@ -1,5 +1,6 @@
-package br.alfredopaes.my_plant_backend.plants
+package br.alfredopaes.my_plant_backend.plants.requests
 
+import br.alfredopaes.my_plant_backend.plants.Plant
 import jakarta.validation.constraints.NotBlank
 
 data class PlantRequest(

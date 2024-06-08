@@ -1,4 +1,6 @@
-package br.alfredopaes.my_plant_backend.plants
+package br.alfredopaes.my_plant_backend.plants.responses
+
+import br.alfredopaes.my_plant_backend.plants.Plant
 
 class PlantResponse(
     val namePlant: String,

@@ -2,6 +2,7 @@ package br.alfredopaes.my_plant_backend.security
 
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType
 import io.swagger.v3.oas.annotations.security.SecurityScheme
+import jakarta.servlet.http.HttpServletResponse
 import jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -9,6 +10,7 @@ import org.springframework.http.HttpMethod
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.config.http.SessionCreationPolicy.STATELESS
 import org.springframework.security.web.DefaultSecurityFilterChain
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter
@@ -36,14 +38,14 @@ class SecurityConfig(val jwtTokenFilter: JwtTokenFilter) {
     fun filterChain(security: HttpSecurity, mvc: MvcRequestMatcher.Builder): DefaultSecurityFilterChain =
         security.cors(Customizer.withDefaults())
             .csrf { it.disable() }
-            .sessionManagement { it.sessionCreationPolicy(STATELESS) }
+            .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
             .exceptionHandling { it.authenticationEntryPoint { _, res, ex ->
                 res.sendError(
-                    SC_UNAUTHORIZED,
+                    HttpServletResponse.SC_UNAUTHORIZED,
                     if (ex.message.isNullOrEmpty()) "UNAUTHORIZED" else ex.message
                 )
             } }
-            .headers { it.frameOptions { fo -> fo.disable() } }
+            .headers { it.frameOptions { frameOptions -> frameOptions.disable() } }
             .authorizeHttpRequests { requests ->
                 requests
                     .requestMatchers(antMatcher(HttpMethod.GET)).permitAll()

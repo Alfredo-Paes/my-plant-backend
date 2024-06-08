@@ -22,13 +22,13 @@ class Jwt {
         UserToken(user).let {
             Jwts.builder()
                 .signWith(Keys.hmacShaKeyFor(SECRET.toByteArray()))
-                .json(JacksonSerializer())
-                .issuedAt(utcNow().toDate())
-                .expiration(utcNow().plusHours(
+                .serializeToJsonWith(JacksonSerializer())
+                .setIssuedAt(utcNow().toDate())
+                .setExpiration(utcNow().plusHours(
                     if (it.isAdmin) ADMIN_EXPIRE_HOURS else EXPIRE_HOURS).toDate()
                 )
-                .issuer(ISSUER)
-                .subject(user.id.toString())
+                .setIssuer(ISSUER)
+                .setSubject(user.id.toString())
                 .claim(USER_FIELD, it)
                 .compact()
         }
@@ -36,18 +36,18 @@ class Jwt {
     fun extract(req: HttpServletRequest): Authentication? {
         try {
             val header = req.getHeader(AUTHORIZATION)
-            if (header == null || !header.startsWith("Bearer")) return null
-            val token = header.replace("Bearer", "").trim()
+            if (header == null || !header.startsWith("Bearer ")) return null
+            val token = header.replace("Bearer ", "").trim()
 
-            val claims = Jwts
-                .parser().verifyWith(Keys.hmacShaKeyFor(SECRET.toByteArray()))
-                .json(JacksonDeserializer(mapOf(USER_FIELD to UserToken::class.java)))
+            val claims = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(SECRET.toByteArray()))
+                .deserializeJsonWith(JacksonDeserializer(mapOf(USER_FIELD to UserToken::class.java)))
                 .build()
-                .parseSignedClaims(token)
-                .payload
+                .parseClaimsJws(token)
+                .body
 
             if (claims.issuer != ISSUER) return null
-            return claims.get("user", UserToken::class.java).toAuthentication()
+            return claims.get(USER_FIELD, UserToken::class.java)?.toAuthentication()
         } catch (e: Throwable) {
             log.debug("Token rejected", e)
             return null

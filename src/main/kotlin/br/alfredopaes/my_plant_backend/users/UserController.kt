@@ -31,8 +31,6 @@ class UserController(
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    @SecurityRequirement(name="WebToken")
     fun findAll(
         @RequestParam sortDir: String? = null,
         @RequestParam role: String? = null,
@@ -61,11 +59,9 @@ class UserController(
     @SecurityRequirement(name="WebToken")
     fun deleteById(
         @PathVariable id: Long
-    ): ResponseEntity<String> =
-        userService.delete(id)
-            ?.let { UserResponse(it) }
-            ?.let { ResponseEntity.ok("Usuário ${it.name} removido com sucesso!") }
-            ?:ResponseEntity.status(404).body("Usuário não encontrado!")
+    ): ResponseEntity<Void> =
+        if (userService.delete(id)) ResponseEntity.ok().build()
+        else ResponseEntity.notFound().build()
 
     @PutMapping("/{id}")
     fun update(

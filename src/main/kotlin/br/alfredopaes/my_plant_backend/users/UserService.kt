@@ -1,5 +1,6 @@
 package br.alfredopaes.my_plant_backend.users
 
+import br.alfredopaes.my_plant_backend.excepetions.BadRequestExcepetion
 import br.alfredopaes.my_plant_backend.plants.Plant
 import br.alfredopaes.my_plant_backend.plants.PlantRepository
 import br.alfredopaes.my_plant_backend.plants.requests.PlantRequest
@@ -41,12 +42,14 @@ class UserService(
 
     fun findById(id: Long): User? = userRepository.findByIdOrNull(id);
 
-    fun delete(id: Long): User? {
-        val user = userRepository.findById(id).orElse(null)
-        user?.let {
-            userRepository.deleteById(id);
+    fun delete(id: Long): Boolean {
+        val user = userRepository.findByIdOrNull(id) ?: return false
+        if (user.roles.any { it.name == "ADMIN" }) {
+            val adminRole = roleRepository.findRoleByName("ADMIN")
+            if (adminRole != null && roleRepository.countByName("ADMIN").toInt() == 1) throw BadRequestExcepetion("Não pode deletar último Administrador")
         }
-        return user;
+        userRepository.delete(user)
+        return true
     }
 
     fun updateUser(id: Long, userDetails: User): User? {

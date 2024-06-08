@@ -2,6 +2,9 @@ package br.alfredopaes.my_plant_backend.security
 
 import br.alfredopaes.my_plant_backend.users.User
 import com.fasterxml.jackson.annotation.JsonIgnore
+import org.apache.tomcat.util.net.openssl.ciphers.Authentication
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 
 data class UserToken(
     val id: Long,
@@ -17,4 +20,9 @@ data class UserToken(
 
     @get:JsonIgnore
     val isAdmin: Boolean get() = "ADMIN" in roles
+
+    fun toAuthentication(): UsernamePasswordAuthenticationToken {
+        val authorities = roles.map { SimpleGrantedAuthority("ROLE_$it") }
+        return UsernamePasswordAuthenticationToken(name, null, authorities)
+    }
 }

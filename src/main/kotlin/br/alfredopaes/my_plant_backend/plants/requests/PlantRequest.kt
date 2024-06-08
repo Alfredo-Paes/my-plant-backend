@@ -4,15 +4,15 @@ import br.alfredopaes.my_plant_backend.plants.Plant
 import jakarta.validation.constraints.NotBlank
 
 data class PlantRequest(
-    @NotBlank
+    @field:NotBlank(message = "Insira um nome para sua planta!")
     val namePlant: String,
-    @NotBlank
+    @field:NotBlank(message = "Insira o tipo de sua planta!")
     val typePlant: String,
-    @NotBlank
+    @field:NotBlank(message = "Insira a válidade da terra que a sua planta está alocada.")
     val validityOfPlantingLand: String,
-    @NotBlank
+    @field:NotBlank(message = "Insira o horário para regar a sua planta.")
     val timeToWaterThePlant: String
-) {
+    ) {
     fun toPlant(): Plant = Plant(
         namePlant = namePlant,
         typePlant = typePlant,

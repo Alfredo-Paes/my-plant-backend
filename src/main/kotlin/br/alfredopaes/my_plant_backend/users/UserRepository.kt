@@ -11,14 +11,10 @@ interface UserRepository: JpaRepository<User, Long>{
     fun findByName(name: String): List<User>;
 
     @Query(
-        """
-        SELECT u.id AS userId, u.name AS userName, u.email, 
-               STRING_AGG(p.namePlant, ', ') AS plants
-        FROM tbUser u
-        LEFT JOIN tbPlant p ON u.id = p.user_id
-        GROUP BY u.id, u.name, u.email
-        """,
-        nativeQuery = true
+        "select distinct u from User u" +
+                " join u.roles r" +
+                " where r.name = :role" +
+                " order by u.name"
     )
-    fun findUsersWithPlants(): List<Map<String, Any>>
+    fun findByRole(role: String): List<User>
 }

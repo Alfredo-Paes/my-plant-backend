@@ -14,4 +14,7 @@ class Role(
     var name: String,
 
     var description: String = "",
-)
+) {
+    // Construtor padrão necessário para o Hibernate
+    constructor() : this(name = "", description = "")
+}

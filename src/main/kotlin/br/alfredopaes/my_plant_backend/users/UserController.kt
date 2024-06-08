@@ -17,7 +17,7 @@ class UserController(
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(user.toUser()));
     }
 
-    @GetMapping
+    /*@GetMapping
     fun findAll(
         @RequestParam sortDir: String? = null,
         @RequestParam email: String? = null,
@@ -29,7 +29,21 @@ class UserController(
             ?.map { UserResponse(it) }
             ?.let { ResponseEntity.ok(it) }
             ?: ResponseEntity.badRequest().build()
-    }
+    }*/
+
+    @GetMapping
+    fun findAll(
+        @RequestParam sortDir: String? = null,
+        @RequestParam role: String? = null,
+        @RequestParam email: String? = null,
+        @RequestParam name: String? = null
+    ): ResponseEntity<List<UserResponse>> =
+        SortDir.entries.firstOrNull { it.name == (sortDir ?: "ASC").uppercase() }
+            ?.let { userService.findAll(it, role, email, name) }
+            ?.map { UserResponse(it) }
+            ?.let { ResponseEntity.ok(it) }
+            ?: ResponseEntity.badRequest().build()
+
 
     @GetMapping("/{id}")
     fun findbyId(
@@ -59,6 +73,14 @@ class UserController(
             ?.let { ResponseEntity.ok(it) }
             ?: ResponseEntity.status(404).body("Usuário não encontrado!")
     }
+
+    @PutMapping("/{id}/roles/{role}")
+    fun grant(
+        @PathVariable id: Long,
+        @PathVariable role: String
+    ): ResponseEntity<Void> =
+        if (userService.addRole(id, role)) ResponseEntity.ok().build()
+        else ResponseEntity.noContent().build()
 
     /**
      * Métodos referentes a edição e remoção de uma planta que estão vinculados a um usuário

@@ -17,17 +17,17 @@ import java.time.ZonedDateTime
 import java.util.*
 
 @Component
-class Jwt {
+class Jwt(val properties: SecurityProperties) {
     fun createToken(user: User): String =
         UserToken(user).let {
             Jwts.builder()
-                .signWith(Keys.hmacShaKeyFor(SECRET.toByteArray()))
+                .signWith(Keys.hmacShaKeyFor(properties.secret.toByteArray()))
                 .serializeToJsonWith(JacksonSerializer())
                 .setIssuedAt(utcNow().toDate())
                 .setExpiration(utcNow().plusHours(
-                    if (it.isAdmin) ADMIN_EXPIRE_HOURS else EXPIRE_HOURS).toDate()
+                    if (it.isAdmin) properties.adminExpireHours else properties.expireHours).toDate()
                 )
-                .setIssuer(ISSUER)
+                .setIssuer(properties.issuer)
                 .setSubject(user.id.toString())
                 .claim(USER_FIELD, it)
                 .compact()
@@ -40,13 +40,13 @@ class Jwt {
             val token = header.replace("Bearer ", "").trim()
 
             val claims = Jwts.parserBuilder()
-                .setSigningKey(Keys.hmacShaKeyFor(SECRET.toByteArray()))
+                .setSigningKey(Keys.hmacShaKeyFor(properties.secret.toByteArray()))
                 .deserializeJsonWith(JacksonDeserializer(mapOf(USER_FIELD to UserToken::class.java)))
                 .build()
                 .parseClaimsJws(token)
                 .body
 
-            if (claims.issuer != ISSUER) return null
+            if (claims.issuer != properties.issuer) return null
             return claims.get(USER_FIELD, UserToken::class.java)?.toAuthentication()
         } catch (e: Throwable) {
             log.debug("Token rejected", e)
@@ -56,12 +56,7 @@ class Jwt {
 
     companion object {
         val log = LoggerFactory.getLogger(Jwt::class.java)
-
-        val SECRET = "3083ad22d244d5c07b025575402beefb743df30b"
-        const val EXPIRE_HOURS = 48L
-        const val ISSUER = "MyPlantBackEnd"
         const val USER_FIELD = "user"
-        const val ADMIN_EXPIRE_HOURS = 1L
 
 
         private fun utcNow() = ZonedDateTime.now(ZoneOffset.UTC)

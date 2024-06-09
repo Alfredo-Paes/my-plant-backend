@@ -1,4 +1,5 @@
 # Minha Planta (My Plant) - Projeto de Registro de Plantas
+Desenvolvido por: Alfredo Paes da Luz.
 
 ## Descrição do Projeto
 

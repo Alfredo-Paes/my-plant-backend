@@ -44,5 +44,5 @@ Este projeto pertence ao trabalho final da disciplina de Desenvolvimento de Back
 
 ### Todas as rotas são acessadas através do : http://localhost:8080/api/swagger-ui/index.html?continue#/user-controller/login
 
-### Vídeo de demonstração: 
+### Vídeo de demonstração: https://youtu.be/SUos2kJkkWw?si=jcDRPWId_RL6HiMA
 

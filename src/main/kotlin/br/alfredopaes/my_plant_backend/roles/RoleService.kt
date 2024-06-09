@@ -6,5 +6,5 @@ import org.springframework.stereotype.Service
 @Service
 class RoleService(val roleRepository: RoleRepository) {
     fun insert(role: Role): Role = roleRepository.save(role)
-    fun listAllRoles(): List<Role> =  roleRepository.findAll(Sort.by("name").ascending())
+    fun listAllRoles(): List<Role> = roleRepository.findAll(Sort.by("name").ascending())
 }

@@ -32,6 +32,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	runtimeOnly("com.h2database:h2")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 	implementation("io.jsonwebtoken:jjwt-api:0.12.5")

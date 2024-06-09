@@ -26,7 +26,7 @@ class User(
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )
     @JsonIgnore
-    val roles: MutableSet<Role> = mutableSetOf(),
+    var roles: MutableSet<Role> = mutableSetOf(),
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
     @JsonManagedReference

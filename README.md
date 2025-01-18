@@ -46,3 +46,5 @@ Este projeto pertence ao trabalho final da disciplina de Desenvolvimento de Back
 
 ### Vídeo de demonstração: https://youtu.be/SUos2kJkkWw?si=jcDRPWId_RL6HiMA
 
+### Implementação da AWS
+
